@@ -1,0 +1,105 @@
+/* Full-screen background
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url("bg.jpeg") no-repeat center center/cover;
+    backdrop-filter: blur(20px);
+  } */
+  .auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url("bg.jpeg") no-repeat center center/cover;
+    backdrop-filter: blur(5px); /* Increased blur effect */
+    position: relative;
+  }
+  
+  /* Extra Layer to Enhance Blur */
+  .auth-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Slight dark overlay for better readability */
+    backdrop-filter: blur(6px); /* Extra blur effect */
+    z-index: -1;
+  }
+  
+  /* Glassmorphism effect */
+  .auth-box {
+    background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 350px;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Title Styling */
+  .auth-box h2 {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 1rem;
+  }
+  
+  /* Form Inputs */
+  .auth-box form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .auth-box input {
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    outline: none;
+  }
+  
+  .auth-box input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Submit Button */
+  .auth-box button {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  .auth-box button:hover {
+    background: rgba(126, 121, 121, 0.5);
+  }
+  
+  /* Text Links */
+  .auth-box p {
+    margin-top: 10px;
+    color: rgb(2, 1, 1);
+  }
+  
+  .auth-box a {
+    color: #88b5e9;
+    text-decoration: none;
+  }
+  
+  .auth-box a:hover {
+    text-decoration: underline;
+  }
+  
