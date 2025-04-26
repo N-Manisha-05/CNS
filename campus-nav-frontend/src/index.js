@@ -67,8 +67,7 @@ import { BrowserRouter } from "react-router-dom"; // <-- ✅ Import BrowserRoute
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <BrowserRouter>
+  <BrowserRouter>  {/* Wrap your App with BrowserRouter */}
     <App />
   </BrowserRouter>
 );
-
