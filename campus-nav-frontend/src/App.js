@@ -41,15 +41,16 @@ import Info from "./pages/Info";
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/map" element={<Map />} />
-      <Route path="/photos" element={<PhotosPage />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/info" element={<Info />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+    <Route path="/" element={<Navigate to="/login" replace />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/signup" element={<Signup />} />
+    <Route path="/map" element={<Map />} />
+    <Route path="/photos" element={<PhotosPage />} />
+    <Route path="/about" element={<About />} />
+    <Route path="/contact" element={<Contact />} />
+    <Route path="/info" element={<Info />} />
+    <Route path="*" element={<Navigate to="/login" replace />} />
+  </Routes>
   );
 }
 
