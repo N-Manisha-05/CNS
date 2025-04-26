@@ -29,6 +29,7 @@
 // export default App;
 // src/App.js
 
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -46,9 +47,9 @@ function App() {
       <Route path="/map" element={<Map />} />
       <Route path="/photos" element={<PhotosPage />} />
       <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/info" element={<Info />} />
-      <Route path="*" element={<Navigate to="/login" />} />
+      <Route path="/contact" element={<Contact />} /> {/* lowercase path */}
+      <Route path="/info" element={<Info />} /> {/* lowercase path */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
