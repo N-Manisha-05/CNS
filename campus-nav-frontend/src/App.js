@@ -28,7 +28,8 @@
 
 // export default App;
 // src/App.js
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Map from "./pages/Map";
@@ -39,18 +40,16 @@ import Info from "./pages/Info";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/map" element={<Map />} />
-        <Route path="/photos" element={<PhotosPage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/info" element={<Info />} />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/map" element={<Map />} />
+      <Route path="/photos" element={<PhotosPage />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/info" element={<Info />} />
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
   );
 }
 
