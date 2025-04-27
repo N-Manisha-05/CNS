@@ -1,7 +1,6 @@
 {
   "name": "campus-nav-frontend",
   "version": "0.1.0",
-  
   "private": true,
   "homepage": "https://campus-navigation-system-frontend.onrender.com",
   "dependencies": {
@@ -24,6 +23,7 @@
     "react-modal": "^3.16.3",
     "react-router-dom": "^7.5.2",
     "react-scripts": "5.0.1",
+    "serve": "^14.2.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -32,8 +32,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "postbuild": "cp -r build dist"
-    
-    
   },
   "eslintConfig": {
     "extends": [
