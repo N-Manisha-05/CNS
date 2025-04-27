@@ -514,7 +514,7 @@ const MapPage = () => {
     setDestinationText(name);
     setDestinationCoords(coords);
     mapRef.current?.setView([coords.lat, coords.lng], 18);
-
+  
     if (mapRef.current) {
       const { type, hours, description } = customLocations[name];
       const popupContent = `
@@ -531,7 +531,7 @@ const MapPage = () => {
         .openOn(mapRef.current);
     }
   };
-
+  
   return (
     <div style={{ height: "100vh", width: "100vw", position: "relative" }}>
       <Navbar />
