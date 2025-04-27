@@ -19,6 +19,8 @@ const blocks = [
     name: "Academic Block 2",
     description: `This block houses classrooms, seminar halls, and faculty offices. Equipped with projectors, whiteboards, and good seating.<br/>
     <strong>Administration Office:</strong> G001<br/>
+    <strong>Dean of Student Welfare(DSW):</strong>F013<br/>
+    <strong>IT Infra:</strong> F007<br/>
   `,
     image: "/images/2.jpeg"
   },
