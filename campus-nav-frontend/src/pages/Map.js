@@ -12,10 +12,8 @@ import './map.css';
 
 const rkValley = { lat: 14.33499, lng: 78.537372 };
 const MOVEMENT_THRESHOLD = 10; // meters (minimum distance to trigger update)
-const UPDATE_INTERVAL = 6000; // ms (maximum time between updates)
+const UPDATE_INTERVAL = 15000; // ms (maximum time between updates)
 
-
-// Default Leaflet marker icon for consistent rendering
 let DefaultIcon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
@@ -90,7 +88,7 @@ const RoutingMachine = ({ source, destination, travelMode }) => {
         <div
           style={{
             position: "absolute",
-            top: 125,
+            top: 120,
             left: "50%",
             transform: "translateX(-50%)",
             background: "#ffffffee",
@@ -110,7 +108,6 @@ const RoutingMachine = ({ source, destination, travelMode }) => {
     </>
   );
 };
-
 const MapPage = () => {
   const [sourceText, setSourceText] = useState("");
   const [destinationText, setDestinationText] = useState("");
@@ -221,78 +218,34 @@ const MapPage = () => {
 
   // watching live location
   useEffect(() => {
-  let watchId;
-  let previousPosition = null;
-
-  if (navigator.geolocation) {
-    watchId = navigator.geolocation.watchPosition(
-      (location) => {
-        const { latitude, longitude, accuracy } = location.coords;
-        const newPosition = [latitude, longitude];
-        
-        // Check if movement exceeds threshold or is first position
-        if (!previousPosition || 
-            calculateDistance(
-              previousPosition[0], 
-              previousPosition[1], 
-              latitude, 
-              longitude
-            ) > MOVEMENT_THRESHOLD) {
-              
-          console.log("Significant movement detected - updating position");
-          setPosition(newPosition);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (location) => {
+          const { latitude, longitude } = location.coords;
+          console.log("Live location fetched:", { latitude, longitude }); // Debug log
+          setPosition([latitude, longitude]);
           fetchAddress(latitude, longitude);
-          previousPosition = newPosition;
-
-          if (mapRef.current) {
-            // Update or create marker
-            if (!liveMarkerRef.current) {
-              liveMarkerRef.current = L.marker(newPosition, {
-                icon: L.divIcon({
-                  className: 'live-location-marker',
-                  html: '<div class="pulse-effect"></div>',
-                  iconSize: [30, 30],
-                  iconAnchor: [15, 15]
-                })
-              }).addTo(mapRef.current)
-                .bindPopup("📍 You are here (Live!)");
-            } else {
-              liveMarkerRef.current.setLatLng(newPosition);
-            }
-
-            // Only center map if accuracy is good
-            if (accuracy < 50) {
-              mapRef.current.setView(newPosition, 18, {
-                animate: true,
-                duration: 0.5
-              });
-            }
-          }
+          mapRef.current?.setView([latitude, longitude], 18); // Center map on live location
+        },
+        (error) => {
+          console.error("Error fetching live location:", error);
+          setAddress("Unable to retrieve location. Try enabling GPS.");
+          setPosition([rkValley.lat, rkValley.lng]);
+          alert("Unable to retrieve your location. Please enable GPS or select a location from the sidebar.");
+        },
+        {
+          enableHighAccuracy: true, // Prioritize GPS
+          timeout: 10000, // 10-second timeout
+          maximumAge: 0 // No cached position
         }
-      },
-      (error) => {
-        console.error("Location error:", error);
-        setAddress("Location error - " + error.message);
-        if (error.code === error.TIMEOUT) {
-          alert("Location timed out. Ensure GPS is enabled and you're in an area with good signal.");
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: UPDATE_INTERVAL,
-        maximumAge: 0
-      }
-    );
-  }
-
-  return () => {
-    if (watchId) navigator.geolocation.clearWatch(watchId);
-    if (liveMarkerRef.current && mapRef.current) {
-      mapRef.current.removeLayer(liveMarkerRef.current);
+      );
+    } else {
+      console.error("Geolocation not supported");
+      setAddress("Geolocation not supported");
+      setPosition([rkValley.lat, rkValley.lng]);
+      alert("Geolocation is not supported by your browser. Please select a location from the sidebar.");
     }
-  };
-}, []);
-  
+  }, []);
   // Reverse geocoding function
   const fetchAddress = async (lat, lng) => {
     try {
@@ -336,66 +289,135 @@ const MapPage = () => {
   //   } else {
   //     alert("Geolocation is not supported by your browser.");
   //   }
+  // // };
+  // const startLiveTracking = () => {
+  //   setLoadingLocation(true);
+  //   if (watchId) {
+  //     navigator.geolocation.clearWatch(watchId);
+  //     setWatchId(null);
+  //   }
+  
+  //   if (navigator.geolocation) {
+  //     const id = navigator.geolocation.watchPosition(
+  //       (position) => {
+  //         const { latitude, longitude } = position.coords;
+  //         const accuracy = position.coords.accuracy;
+          
+  //         // Only update if significant movement detected
+  //         if (!position || 
+  //             !liveMarkerRef.current || 
+  //             calculateDistance(
+  //               position[0], 
+  //               position[1], 
+  //               latitude, 
+  //               longitude
+  //             ) > MOVEMENT_THRESHOLD) {
+            
+  //           console.log("Updating live location:", { latitude, longitude });
+  //           setPosition([latitude, longitude]);
+  //           fetchAddress(latitude, longitude);
+            
+  //           // Update or create marker
+  //           if (liveMarkerRef.current) {
+  //             liveMarkerRef.current.setLatLng([latitude, longitude]);
+  //           } else {
+  //             liveMarkerRef.current = L.marker([latitude, longitude], {
+  //               icon: L.divIcon({
+  //                 className: 'live-location-marker',
+  //                 html: '<div class="pulse-effect"></div>',
+  //                 iconSize: [30, 30],
+  //                 iconAnchor: [15, 15]
+  //               })
+  //             }).addTo(mapRef.current)
+  //               .bindPopup("📍 You are here (Live!)")
+  //               .openPopup();
+  //           }
+            
+  //           // Center map if accuracy is good (<50m)
+  //           if (accuracy < 50) {
+  //             mapRef.current?.setView([latitude, longitude], 18);
+  //           }
+  //         }
+  //         setLoadingLocation(false);
+  //       },
+  //       (error) => {
+  //         console.error("Error in live tracking:", error);
+  //         setLoadingLocation(false);
+  //         alert("Live tracking failed. Please ensure GPS is enabled.");
+  //       },
+  //       {
+  //         enableHighAccuracy: true,
+  //         maximumAge: 0,
+  //         timeout: UPDATE_INTERVAL
+  //       }
+  //     );
+  //     setWatchId(id);
+  //   } else {
+  //     setLoadingLocation(false);
+  //     alert("Geolocation is not supported by your browser.");
+  //   }
   // };
+  
   const startLiveTracking = () => {
     setLoadingLocation(true);
+    setIsTracking(true);
+    
+    
     if (watchId) {
       navigator.geolocation.clearWatch(watchId);
-      setWatchId(null);
     }
   
     if (navigator.geolocation) {
       const id = navigator.geolocation.watchPosition(
         (position) => {
-          const { latitude, longitude } = position.coords;
-          const accuracy = position.coords.accuracy;
+          const { latitude, longitude, accuracy } = position.coords;
+          const newPosition = [latitude, longitude];
           
-          // Only update if significant movement detected
-          if (!position || 
-              !liveMarkerRef.current || 
-              calculateDistance(
-                position[0], 
-                position[1], 
-                latitude, 
-                longitude
-              ) > MOVEMENT_THRESHOLD) {
-            
-            console.log("Updating live location:", { latitude, longitude });
-            setPosition([latitude, longitude]);
-            fetchAddress(latitude, longitude);
-            
-            // Update or create marker
-            if (liveMarkerRef.current) {
-              liveMarkerRef.current.setLatLng([latitude, longitude]);
-            } else {
-              liveMarkerRef.current = L.marker([latitude, longitude], {
-                icon: L.divIcon({
-                  className: 'live-location-marker',
-                  html: '<div class="pulse-effect"></div>',
-                  iconSize: [30, 30],
-                  iconAnchor: [15, 15]
-                })
-              }).addTo(mapRef.current)
-                .bindPopup("📍 You are here (Live!)")
-                .openPopup();
-            }
-            
-            // Center map if accuracy is good (<50m)
-            if (accuracy < 50) {
-              mapRef.current?.setView([latitude, longitude], 18);
-            }
+          console.log("Position update:", { latitude, longitude, accuracy });
+          setPosition(newPosition);
+          fetchAddress(latitude, longitude);
+  
+          // Marker handling
+          if (!liveMarkerRef.current) {
+            liveMarkerRef.current = L.marker(newPosition, {
+              icon: L.divIcon({
+                className: 'live-location-marker',
+                html: '<div class="pulse-effect"></div>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+              })
+            }).addTo(mapRef.current)
+              .bindPopup(`📍 You are here! (Accuracy: ${Math.round(accuracy)}m)`);
+          } else {
+            liveMarkerRef.current.setLatLng(newPosition);
           }
+  
+          // Center map if accuracy is good
+          if (accuracy < 100) { // Increased threshold to 100m
+            mapRef.current?.setView(newPosition, 18, {
+              animate: true,
+              duration: 1
+            });
+          }
+          
           setLoadingLocation(false);
         },
         (error) => {
-          console.error("Error in live tracking:", error);
+          console.error("Geolocation error:", error);
           setLoadingLocation(false);
-          alert("Live tracking failed. Please ensure GPS is enabled.");
+          
+          if (error.code === error.TIMEOUT) {
+            alert("Taking longer than expected to get location. Ensure GPS is enabled and you're in an open area.");
+            // Auto-retry after delay
+            setTimeout(startLiveTracking, 3000);
+          } else if (error.code === error.PERMISSION_DENIED) {
+            alert("Please enable location permissions in your browser settings.");
+          }
         },
         {
           enableHighAccuracy: true,
-          maximumAge: 0,
-          timeout: UPDATE_INTERVAL
+          timeout: UPDATE_INTERVAL,
+          maximumAge: 10000 // 10 seconds
         }
       );
       setWatchId(id);
@@ -404,25 +426,42 @@ const MapPage = () => {
       alert("Geolocation is not supported by your browser.");
     }
   };
-  
+
   const stopLiveTracking = () => {
     if (watchId) {
       navigator.geolocation.clearWatch(watchId);
       setWatchId(null);
     }
     setLoadingLocation(false);
+    setIsTracking(false); // Add this line
   };
+  
   const handleLiveLocation = () => {
-    if (loadingLocation) {
-      // This now toggles tracking off
-      if (watchId) {
-        navigator.geolocation.clearWatch(watchId);
-        setWatchId(null);
-      }
-      setLoadingLocation(false);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (location) => {
+          const { latitude, longitude } = location.coords;
+          console.log("Live location updated:", { latitude, longitude }); // Debug log
+          setPosition([latitude, longitude]);
+          fetchAddress(latitude, longitude);
+          mapRef.current?.setView([latitude, longitude], 18);
+          L.marker([latitude, longitude])
+            .addTo(mapRef.current)
+            .bindPopup("📍 You are here!")
+            .openPopup();
+        },
+        (error) => {
+          console.error("Error fetching live location:", error);
+          alert("Unable to retrieve your location. Please enable GPS or select a location from the sidebar.");
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
     } else {
-      // Restart tracking
-      startLiveTracking();
+      alert("Geolocation is not supported by your browser.");
     }
   };
 
@@ -445,7 +484,6 @@ const MapPage = () => {
       });
     });
   };
-
   const filterSuggestions = (query) => {
     const lowerQuery = query.toLowerCase();
     const filtered = Object.keys(customLocations)
@@ -607,11 +645,14 @@ const MapPage = () => {
     border: "none",
     borderRadius: "6px",
     padding: "6px 10px",
-    cursor: "pointer",
+    cursor: loadingLocation ? "wait" : "pointer",
     fontSize: "14px",
+    opacity: loadingLocation ? 0.8 : 1,
   }}
+  disabled={loadingLocation}
 >
-  {isTracking ? "⏹ Stop Tracking" : "📍 Live Location"}
+  {loadingLocation ? "🔄 Processing..." : 
+   isTracking ? "⏹ Stop Tracking" : "📍 Live Location"}
 </button>
 
       {/* Input Bar */}
