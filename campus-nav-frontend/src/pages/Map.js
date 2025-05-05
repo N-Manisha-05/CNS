@@ -1,7 +1,7 @@
 
 
 import React, { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, useMap, LayersControl, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, LayersControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
@@ -12,8 +12,8 @@ import Navbar from './Navbar'; // Adjust the path if needed
 import './map.css';
 
 const rkValley = { lat: 14.33499, lng: 78.537372 };
-const MOVEMENT_THRESHOLD = 10; // meters (minimum distance to trigger update)
-const UPDATE_INTERVAL = 15000; // ms (maximum time between updates)
+const fixedLocation={ lat: 14.335825, lng: 78.541599 };
+
 
 let DefaultIcon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
@@ -553,7 +553,7 @@ const MapPage = () => {
 
   // Handle live location button click
   const handleLiveLocation = () => {
-    if (navigator.geolocation) {
+    /*if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (location) => {
           const { latitude, longitude } = location.coords;
@@ -578,7 +578,19 @@ const MapPage = () => {
       );
     } else {
       alert("Geolocation is not supported by your browser.");
-    }
+    }*/
+    setPosition(fixedLocation);
+
+  if (!liveMarkerRef.current) {
+    liveMarkerRef.current = L.marker(fixedLocation)
+      .addTo(mapRef.current)
+      .bindPopup("📍 You are here!")
+      .openPopup();
+  } else {
+    liveMarkerRef.current.setLatLng(fixedLocation).openPopup();
+  }
+
+  mapRef.current.setView(fixedLocation, 18);
   };
 
   const geocodeLocation = (query) => {
