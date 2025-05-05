@@ -415,11 +415,12 @@ const MapPage = () => {
             alert("Please enable location permissions in your browser settings.");
           }
         },
-        {
+     /*   {
           enableHighAccuracy: true,
           timeout: UPDATE_INTERVAL,
           maximumAge: 10000 // 10 seconds
-        }
+        }*/
+        
       );
       setWatchId(id);
     } else {
@@ -438,63 +439,8 @@ const MapPage = () => {
   };
   
   const handleLiveLocation = () => {
-<<<<<<< HEAD
-    /*if (navigator.geolocation) {
-=======
-    if (isTracking) {
-      stopLiveTracking();
-      return;
-    }
-  
-    setLoadingLocation(true);
-    
-    if (navigator.geolocation) {
->>>>>>> parent of 928f85e... live location old
-      navigator.geolocation.getCurrentPosition(
-        (location) => {
-          const { latitude, longitude } = location.coords;
-          console.log("Live location updated:", { latitude, longitude });
-          const newPosition = [latitude, longitude];
-          setPosition(newPosition);
-          fetchAddress(latitude, longitude);
-          mapRef.current?.setView(newPosition, 18);
-          
-          // Remove existing marker if it exists
-          if (liveMarkerRef.current) {
-            mapRef.current?.removeLayer(liveMarkerRef.current);
-          }
-          
-          // Create new marker
-          liveMarkerRef.current = L.marker(newPosition, {
-            icon: L.divIcon({
-              className: 'live-location-marker',
-              html: '<div class="pulse-effect"></div>',
-              iconSize: [30, 30],
-              iconAnchor: [15, 15]
-            })
-          })
-          .addTo(mapRef.current)
-          .bindPopup("📍 You are here!")
-          .openPopup();
-          
-          setLoadingLocation(false);
-          setIsTracking(true);
-        },
-        (error) => {
-          console.error("Error fetching live location:", error);
-          setLoadingLocation(false);
-          alert("Unable to retrieve your location. Please enable GPS or select a location from the sidebar.");
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        }
-      );
-    } else {
-      setLoadingLocation(false);
-      alert("Geolocation is not supported by your browser.");
-    }*/
+
+   
     setPosition(fixedLocation);
 
   if (!liveMarkerRef.current) {
