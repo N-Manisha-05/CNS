@@ -31,7 +31,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postbuild": "cp -r build dist"
+    "postbuild": "cp -r build dist",
+    "render-build": "npm install && npm run build"
   },
   "eslintConfig": {
     "extends": [
