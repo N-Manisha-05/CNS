@@ -201,66 +201,66 @@ const MapPage = () => {
   //   }
   // }, []);
 
-  // function calculateDistance(lat1, lon1, lat2, lon2) {
-  //   const R = 6371e3; // Earth's radius in meters
-  //   const φ1 = lat1 * Math.PI/180; // Convert latitude 1 to radians
-  //   const φ2 = lat2 * Math.PI/180; // Convert latitude 2 to radians
-  //   const Δφ = (lat2-lat1) * Math.PI/180; // Difference in latitude (radians)
-  //   const Δλ = (lon2-lon1) * Math.PI/180; // Difference in longitude (radians)
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // Earth's radius in meters
+    const φ1 = lat1 * Math.PI/180; // Convert latitude 1 to radians
+    const φ2 = lat2 * Math.PI/180; // Convert latitude 2 to radians
+    const Δφ = (lat2-lat1) * Math.PI/180; // Difference in latitude (radians)
+    const Δλ = (lon2-lon1) * Math.PI/180; // Difference in longitude (radians)
   
-  //   // Haversine formula components
-  //   const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-  //             Math.cos(φ1) * Math.cos(φ2) *
-  //             Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  //   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    // Haversine formula components
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   
-  //   return R * c; // Final distance in meters
-  // }
+    return R * c; // Final distance in meters
+  }
 
-  // watching live locationseEffect(() => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (location) => {
-  //         const { latitude, longitude } = location.coords;
-  //         console.log("Live location fetched:", { latitude, longitude }); // Debug log
-  //         setPosition([latitude, longitude]);
-  //         fetchAddress(latitude, longitude);
-  //         mapRef.current?
-  // u.setView([latitude, longitude], 18); // Center map on live location
-  //       },
-  //       (error) => {
-  //         console.error("Error fetching live location:", error);
-  //         setAddress("Unable to retrieve location. Try enabling GPS.");
-  //         setPosition([rkValley.lat, rkValley.lng]);
-  //         alert("Unable to retrieve your location. Please enable GPS or select a location from the sidebar.");
-  //       },
-  //       {
-  //         enableHighAccuracy: true, // Prioritize GPS
-  //         timeout: 10000, // 10-second timeout
-  //         maximumAge: 0 // No cached position
-  //       }
-  //     );
-  //   } else {
-  //     console.error("Geolocation not supported");
-  //     setAddress("Geolocation not supported");
-  //     setPosition([rkValley.lat, rkValley.lng]);
-  //     alert("Geolocation is not supported by your browser. Please select a location from the sidebar.");
-  //   }
-  // }, []);
-  // // Reverse geocoding function
-  // const fetchAddress = async (lat, lng) => {
-  //   try {
-  //     const response = await fetch(
-  //       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-  //     );
-  //     const data = await response.json();
-  //     console.log("Reverse geocoding result:", data); // Debug log
-  //     setAddress(data.display_name || "Address not found");
-  //   } catch (error) {
-  //     console.error("Error fetching address:", error);
-  //     setAddress("Address not available");
-  //   }
-  // };
+  // watching live location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (location) => {
+          const { latitude, longitude } = location.coords;
+          console.log("Live location fetched:", { latitude, longitude }); // Debug log
+          setPosition([latitude, longitude]);
+          fetchAddress(latitude, longitude);
+          mapRef.current?.setView([latitude, longitude], 18); // Center map on live location
+        },
+        (error) => {
+          console.error("Error fetching live location:", error);
+          setAddress("Unable to retrieve location. Try enabling GPS.");
+          setPosition([rkValley.lat, rkValley.lng]);
+          alert("Unable to retrieve your location. Please enable GPS or select a location from the sidebar.");
+        },
+        {
+          enableHighAccuracy: true, // Prioritize GPS
+          timeout: 10000, // 10-second timeout
+          maximumAge: 0 // No cached position
+        }
+      );
+    } else {
+      console.error("Geolocation not supported");
+      setAddress("Geolocation not supported");
+      setPosition([rkValley.lat, rkValley.lng]);
+      alert("Geolocation is not supported by your browser. Please select a location from the sidebar.");
+    }
+  }, []);
+  // Reverse geocoding function
+  const fetchAddress = async (lat, lng) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+      const data = await response.json();
+      console.log("Reverse geocoding result:", data); // Debug log
+      setAddress(data.display_name || "Address not found");
+    } catch (error) {
+      console.error("Error fetching address:", error);
+      setAddress("Address not available");
+    }
+  };
 
   // Handle live location button click
   // const handleLiveLocation = () => {
@@ -304,6 +304,7 @@ const MapPage = () => {
   //         const { latitude, longitude } = position.coords;
   //         const accuracy = position.coords.accuracy;
           
+  //         // Only update if significant movement detected
   //         if (!position || 
   //             !liveMarkerRef.current || 
   //             calculateDistance(
@@ -358,216 +359,130 @@ const MapPage = () => {
   //   }
   // };
   
-  // const startLiveTracking = () => {
-  //   setLoadingLocation(true);
-  //   setIsTracking(true);
+  const startLiveTracking = () => {
+    setLoadingLocation(true);
+    setIsTracking(true);
     
     
-  //   if (watchId) {
-  //     navigator.geolocation.clearWatch(watchId);
-  //   }
+    if (watchId) {
+      navigator.geolocation.clearWatch(watchId);
+    }
   
-  //   if (navigator.geolocation) {
-  //     const id = navigator.geolocation.watchPosition(
-  //       (position) => {
-  //         const { latitude, longitude, accuracy } = position.coords;
-  //         const newPosition = [latitude, longitude];
-          
-  //         console.log("Position update:", { latitude, longitude, accuracy });
-  //         setPosition(newPosition);
-  //         fetchAddress(latitude, longitude);
-  
-  //         // Marker handling
-  //         if (!liveMarkerRef.current) {
-  //           liveMarkerRef.current = L.marker(newPosition, {
-  //             icon: L.divIcon({
-  //               className: 'live-location-marker',
-  //               html: '<div class="pulse-effect"></div>',
-  //               iconSize: [30, 30],
-  //               iconAnchor: [15, 15]
-  //             })
-  //           }).addTo(mapRef.current)
-  //             .bindPopup(`📍 You are here! (Accuracy: ${Math.round(accuracy)}m)`);
-  //         } else {
-  //           liveMarkerRef.current.setLatLng(newPosition);
-  //         }
-  
-  //         // Center map if accuracy is good
-  //         if (accuracy < 100) { // Increased threshold to 100m
-  //           mapRef.current?.setView(newPosition, 18, {
-  //             animate: true,
-  //             duration: 1
-  //           });
-  //         }
-          
-  //         setLoadingLocation(false);
-  //       },
-  //       (error) => {
-  //         console.error("Geolocation error:", error);
-  //         setLoadingLocation(false);
-          
-  //         if (error.code === error.TIMEOUT) {
-  //           alert("Taking longer than expected to get location. Ensure GPS is enabled and you're in an open area.");
-  //           // Auto-retry after delay
-  //           setTimeout(startLiveTracking, 3000);
-  //         } else if (error.code === error.PERMISSION_DENIED) {
-  //           alert("Please enable location permissions in your browser settings.");
-  //         }
-  //       },
-  //       {
-  //         enableHighAccuracy: true,
-  //         timeout: UPDATE_INTERVAL,
-  //         maximumAge: 10000 // 10 seconds
-  //       }
-  //     );
-  //     setWatchId(id);
-  //   } else {
-  //     setLoadingLocation(false);
-  //     alert("Geolocation is not supported by your browser.");
-  //   }
-  // };
-
-  // const stopLiveTracking = () => {
-  //   if (watchId) {
-  //     navigator.geolocation.clearWatch(watchId);
-  //     setWatchId(null);
-  //   }
-  //   setLoadingLocation(false);
-  //   setIsTracking(false); // Add this line
-  // };
-  
-  // const handleLiveLocation = () => {
-  //   if (isTracking) {
-  //     stopLiveTracking();
-  //     return;
-  //   }
-  
-  //   setLoadingLocation(true);
-    
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (location) => {
-  //         const { latitude, longitude } = location.coords;
-  //         console.log("Live location updated:", { latitude, longitude });
-  //         const newPosition = [latitude, longitude];
-  //         setPosition(newPosition);
-  //         fetchAddress(latitude, longitude);
-  //         mapRef.current?.setView(newPosition, 18);
-          
-  //         // Remove existing marker if it exists
-  //         if (liveMarkerRef.current) {
-  //           mapRef.current?.removeLayer(liveMarkerRef.current);
-  //         }
-          
-  //         // Create new marker
-  //         liveMarkerRef.current = L.marker(newPosition, {
-  //           icon: L.divIcon({
-  //             className: 'live-location-marker',
-  //             html: '<div class="pulse-effect"></div>',
-  //             iconSize: [30, 30],
-  //             iconAnchor: [15, 15]
-  //           })
-  //         })
-  //         .addTo(mapRef.current)
-  //         .bindPopup("📍 You are here!")
-  //         .openPopup();
-          
-  //         setLoadingLocation(false);
-  //         setIsTracking(true);
-  //       },
-  //       (error) => {
-  //         console.error("Error fetching live location:", error);
-  //         setLoadingLocation(false);
-  //         alert("Unable to retrieve your location. Please enable GPS or select a location from the sidebar.");
-  //       },
-  //       {
-  //         enableHighAccuracy: true,
-  //         timeout: 10000,
-  //         maximumAge: 0
-  //       }
-  //     );
-  //   } else {
-  //     setLoadingLocation(false);
-  //     alert("Geolocation is not supported by your browser.");
-  //   }
-  // };
-  // const geocodeLocation = (query) => {
-  //   const normalized = query.trim().toLowerCase();
-  //   for (const name in customLocations) {
-  //     if (name.toLowerCase() === normalized) {
-  //       return Promise.resolve(customLocations[name]);
-  //     }
-  //   }
-
-
-
-
-  // old live location 
-
-
-
-  useEffect(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (location) => {
-          const { latitude, longitude } = location.coords;
-          console.log("Live location fetched:", { latitude, longitude }); // Debug log
-          setPosition([latitude, longitude]);
+      const id = navigator.geolocation.watchPosition(
+        (position) => {
+          const { latitude, longitude, accuracy } = position.coords;
+          const newPosition = [latitude, longitude];
+          
+          console.log("Position update:", { latitude, longitude, accuracy });
+          setPosition(newPosition);
           fetchAddress(latitude, longitude);
-          mapRef.current?.setView([latitude, longitude], 18); // Center map on live location
+  
+          // Marker handling
+          if (!liveMarkerRef.current) {
+            liveMarkerRef.current = L.marker(newPosition, {
+              icon: L.divIcon({
+                className: 'live-location-marker',
+                html: '<div class="pulse-effect"></div>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+              })
+            }).addTo(mapRef.current)
+              .bindPopup(`📍 You are here! (Accuracy: ${Math.round(accuracy)}m)`);
+          } else {
+            liveMarkerRef.current.setLatLng(newPosition);
+          }
+  
+          // Center map if accuracy is good
+          if (accuracy < 100) { // Increased threshold to 100m
+            mapRef.current?.setView(newPosition, 18, {
+              animate: true,
+              duration: 1
+            });
+          }
+          
+          setLoadingLocation(false);
         },
         (error) => {
-          console.error("Error fetching live location:", error);
-          setAddress("Unable to retrieve location. Try enabling GPS.");
-          setPosition([rkValley.lat, rkValley.lng]);
-          alert("Unable to retrieve your location. Please enable GPS or select a location from the sidebar.");
+          console.error("Geolocation error:", error);
+          setLoadingLocation(false);
+          
+          if (error.code === error.TIMEOUT) {
+            alert("Taking longer than expected to get location. Ensure GPS is enabled and you're in an open area.");
+            // Auto-retry after delay
+            setTimeout(startLiveTracking, 3000);
+          } else if (error.code === error.PERMISSION_DENIED) {
+            alert("Please enable location permissions in your browser settings.");
+          }
         },
         {
-          enableHighAccuracy: true, // Prioritize GPS
-          timeout: 10000, // 10-second timeout
-          maximumAge: 0 // No cached position
+          enableHighAccuracy: true,
+          timeout: UPDATE_INTERVAL,
+          maximumAge: 10000 // 10 seconds
         }
       );
+      setWatchId(id);
     } else {
-      console.error("Geolocation not supported");
-      setAddress("Geolocation not supported");
-      setPosition([rkValley.lat, rkValley.lng]);
-      alert("Geolocation is not supported by your browser. Please select a location from the sidebar.");
-    }
-  }, []);
-
-  // Reverse geocoding function
-  const fetchAddress = async (lat, lng) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-      );
-      const data = await response.json();
-      console.log("Reverse geocoding result:", data); // Debug log
-      setAddress(data.display_name || "Address not found");
-    } catch (error) {
-      console.error("Error fetching address:", error);
-      setAddress("Address not available");
+      setLoadingLocation(false);
+      alert("Geolocation is not supported by your browser.");
     }
   };
 
-  // Handle live location button click
+  const stopLiveTracking = () => {
+    if (watchId) {
+      navigator.geolocation.clearWatch(watchId);
+      setWatchId(null);
+    }
+    setLoadingLocation(false);
+    setIsTracking(false); // Add this line
+  };
+  
   const handleLiveLocation = () => {
+<<<<<<< HEAD
     /*if (navigator.geolocation) {
+=======
+    if (isTracking) {
+      stopLiveTracking();
+      return;
+    }
+  
+    setLoadingLocation(true);
+    
+    if (navigator.geolocation) {
+>>>>>>> parent of 928f85e... live location old
       navigator.geolocation.getCurrentPosition(
         (location) => {
           const { latitude, longitude } = location.coords;
-          console.log("Live location updated:", { latitude, longitude }); // Debug log
-          setPosition([latitude, longitude]);
+          console.log("Live location updated:", { latitude, longitude });
+          const newPosition = [latitude, longitude];
+          setPosition(newPosition);
           fetchAddress(latitude, longitude);
-          mapRef.current?.setView([latitude, longitude], 18);
-          L.marker([latitude, longitude])
-            .addTo(mapRef.current)
-            .bindPopup("📍 You are here!")
-            .openPopup();
+          mapRef.current?.setView(newPosition, 18);
+          
+          // Remove existing marker if it exists
+          if (liveMarkerRef.current) {
+            mapRef.current?.removeLayer(liveMarkerRef.current);
+          }
+          
+          // Create new marker
+          liveMarkerRef.current = L.marker(newPosition, {
+            icon: L.divIcon({
+              className: 'live-location-marker',
+              html: '<div class="pulse-effect"></div>',
+              iconSize: [30, 30],
+              iconAnchor: [15, 15]
+            })
+          })
+          .addTo(mapRef.current)
+          .bindPopup("📍 You are here!")
+          .openPopup();
+          
+          setLoadingLocation(false);
+          setIsTracking(true);
         },
         (error) => {
           console.error("Error fetching live location:", error);
+          setLoadingLocation(false);
           alert("Unable to retrieve your location. Please enable GPS or select a location from the sidebar.");
         },
         {
@@ -577,6 +492,7 @@ const MapPage = () => {
         }
       );
     } else {
+      setLoadingLocation(false);
       alert("Geolocation is not supported by your browser.");
     }*/
     setPosition(fixedLocation);
@@ -592,7 +508,6 @@ const MapPage = () => {
 
   mapRef.current.setView(fixedLocation, 18);
   };
-
   const geocodeLocation = (query) => {
     const normalized = query.trim().toLowerCase();
     for (const name in customLocations) {
@@ -620,11 +535,11 @@ const MapPage = () => {
     setSuggestions(filtered);
   };
 
-  // const handleSearchChange = (e) => {
-  //   const query = e.target.value;
-  //   setSearchQuery(query);
-  //   filterSuggestions(query);
-  // };
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    filterSuggestions(query);
+  };
 
   const handleRoute = async () => {
     try {
